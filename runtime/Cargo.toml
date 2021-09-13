@@ -1,4 +1,4 @@
-[package]
+ [package]
 name = "node-polkadex-runtime"
 version = "3.0.0"
 authors = ["Polkadex OÜ  <https://polkadex.trade>"]
@@ -78,6 +78,7 @@ frame-system-rpc-runtime-api = { default-features = false, git = "https://github
 # Used for runtime benchmarking
 frame-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master", optional = true }
 frame-system-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master", optional = true }
+    pallet-society = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master", optional = true }
 
 
 # ORML Pallets
@@ -144,9 +145,9 @@ std = [
     'sp-transaction-pool/std',
     'sp-version/std',
     "sp-npos-elections/std",
-
     "orml-vesting/std",
-    "polkadex-primitives/std"
+    "polkadex-primitives/std",
+
 ]
 runtime-benchmarks = [
     "frame-benchmarking",
@@ -167,6 +168,7 @@ runtime-benchmarks = [
     "pallet-multisig/runtime-benchmarks",
     "pallet-proxy/runtime-benchmarks",
     "pallet-scheduler/runtime-benchmarks",
+    'pallet-society/runtime-benchmarks',
     "pallet-staking/runtime-benchmarks",
     "pallet-timestamp/runtime-benchmarks",
     "pallet-tips/runtime-benchmarks",
