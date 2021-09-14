@@ -149,7 +149,7 @@ describe('UniswapV2', () => {
     // dexIncentive should be set properly
     dexIncentiveAlice = await contract.query.getDexIncentive(tokenA, tokenB, Alice.address);
     expect(dexIncentiveAlice.output).to.eq(39_999);
-  });
+  }).timeout(200000);
 
   it('Add liquidity works with BigNumber', async () => {
     const swapTestCases = [
@@ -215,7 +215,7 @@ describe('UniswapV2', () => {
     const newBobBalanceB = await getAccountBalance(Bob.address, tokenB);
     expect(newBobBalanceA).to.eq(orgBobBalanceA.sub(AMOUNT_A).add(DECREMENT_A));
     expect(newBobBalanceB).to.eq(orgBobBalanceB.sub(AMOUNT_B).add(DECREMENT_B));
-  });
+  }).timeout(200000);
 
   it('Single Path Swap works', async () => {
     const { contract, Alice, Bob, tokenA, tokenB, getAccountBalance, prepareBalance } = await setup();
@@ -269,7 +269,7 @@ describe('UniswapV2', () => {
     const newAliceBalanceB_2 = await getAccountBalance(Alice.address, tokenB);
     expect(newAliceBalanceA_2).to.eq(newAliceBalanceA.add(expandTo18Decimals(10)));
     expect(newAliceBalanceB_2).to.eq(newAliceBalanceB.sub(new BN('1520470882534060563')));
-  });
+  }).timeout(200000);
 
   it('Transaction should revert all ran actions when it is in panic', async () => {
     const { contract, Bob, tokenA, tokenB, getAccountBalance, prepareBalance } = await setup();
@@ -287,5 +287,5 @@ describe('UniswapV2', () => {
     const newBobBalanceB = await getAccountBalance(Bob.address, tokenB);
     expect(newBobBalanceA).to.eq(orgBobBalanceA);
     expect(newBobBalanceB).to.eq(orgBobBalanceB);
-  });
+  }).timeout(200000);
 });
