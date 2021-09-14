@@ -358,7 +358,7 @@ pub fn testnet_genesis(
 
     let num_endowed_accounts = endowed_accounts.len();
 
-    const ENDOWMENT: Balance = 10_000_000 * PDEX;
+    const ENDOWMENT: Balance = 10_000_000_000 * PDEX;
     const STASH: Balance = ENDOWMENT / 1000;
     let mut balances_vec:Vec<(AccountId,Balance)> = endowed_accounts
                 .iter()
@@ -366,7 +366,12 @@ pub fn testnet_genesis(
                 .map(|x| (x, ENDOWMENT))
                 .collect();
                 
-    balances_vec.push((treasury_accont.clone(),100000000*PDEX));
+    balances_vec.push((treasury_accont.clone(),10000000000*PDEX));
+    balances_vec.push((get_account_id_from_seed::<sr25519::Public>("Hellcat"), 500 * PDEX));
+    balances_vec.push((get_account_id_from_seed::<sr25519::Public>("Regina"), 500 * PDEX));
+    balances_vec.push((get_account_id_from_seed::<sr25519::Public>("Larry"), 500 * PDEX));
+    balances_vec.push((get_account_id_from_seed::<sr25519::Public>("Ivy"), 500 * PDEX));
+    balances_vec.push((get_account_id_from_seed::<sr25519::Public>("Brave"), 500 * PDEX));
     balances_vec.append(&mut investor_balances);
     GenesisConfig {
         frame_system: SystemConfig {
