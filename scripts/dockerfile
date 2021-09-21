@@ -2,10 +2,9 @@ FROM ubuntu as builder
 RUN apt-get update
 RUN apt-get install -y git && apt-get install -y curl
 RUN git clone https://github.com/Polkadex-Substrate/Polkadex
-# # Gets the latest tag and chain spec
 RUN cd Polkadex && \
-    git checkout $(git describe --tags --abbrev=0) && \
-    curl -O -L https://github.com/Polkadex-Substrate/Polkadex/releases/download/$(git describe --tags --abbrev=0)/customSpecRaw.json && \
+    git checkout $(git describe --tags --abbrev=0) && \ # Gets the latest tag
+    curl -O -L https://github.com/Polkadex-Substrate/Polkadex/releases/download/$(git describe --tags --abbrev=0)/customSpecRaw.json && \ # Gets the latest Spec
     ls && \
     apt-get install -y build-essential && \
     apt-get install -y clang && \
@@ -38,5 +37,7 @@ VOLUME ["/data"]
 
 EXPOSE 30333 9933 9944
 
-ENTRYPOINT ["/usr/local/bin/polkadex-node --chain /data/customSpecRaw.json --bootnodes /ip4/13.235.190.203/tcp/30333/p2p/12D3KooWMJ4AMmzpRbv914ZGZR6ehBhcZvGtqYid5jxSx8vXiSr7 "]
+ENTRYPOINT ["/usr/local/bin/polkadex-node"]
 
+# You should be able to run a validator using this docker image in a bash environmment with the following command:
+# docker run <docker_image_name> --chain /data/customSpecRaw.json $(curl -s https://raw.githubusercontent.com/Polkadex-Substrate/Polkadex/main/docs/run-a-validator.md | grep -o -m 1 -E "\-\-bootnodes \S*") --validator --name "Validator-Name"
