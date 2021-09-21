@@ -38,5 +38,5 @@ VOLUME ["/data"]
 
 EXPOSE 30333 9933 9944
 
-ENTRYPOINT ["/usr/local/bin/polkadex-node --chain /data/customSpecRaw.json --bootnodes /ip4/13.235.190.203/tcp/30333/p2p/12D3KooWMJ4AMmzpRbv914ZGZR6ehBhcZvGtqYid5jxSx8vXiSr7 "]
+ENTRYPOINT ["/usr/local/bin/polkadex-node","--chain=/data/customSpecRaw.json","--bootnodes=/ip4/13.235.190.203/tcp/30333/p2p/12D3KooWMJ4AMmzpRbv914ZGZR6ehBhcZvGtqYid5jxSx8vXiSr7", "--rpc-external", "--ws-external"]
 
