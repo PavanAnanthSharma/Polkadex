@@ -1,6 +1,7 @@
 # Run a Validator (Polkadex)
 
 This guide will instruct you how to set up a validator node on the Polkadex Public Testnet.
+For details on [running a validator on the main net, check here](https://github.com/Polkadex-Substrate/Polkadex/blob/main-net-runtime/docs/run-a-validator.md)
 
 - **Github**: https://github.com/Polkadex-Substrate/Polkadex/releases/tag/v0.4.2-rc2
 - **Bootnode IP address**: 13.235.190.203
