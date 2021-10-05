@@ -31,9 +31,10 @@ pub mod pallet {
     use frame_support::traits::fungible::Mutate;
     use frame_system::pallet_prelude::*;
     use sp_runtime::SaturatedConversion;
-    use sp_runtime::traits::{BlockNumberProvider, Zero};
-    use sp_std::vec::Vec;
+    use sp_runtime::traits::{BlockNumberProvider, Saturating, Zero};
     use sp_std::vec;
+    use sp_std::vec::Vec;
+
     use crate::WeightInfo;
 
     const MIGRATION_LOCK: frame_support::traits::LockIdentifier = *b"pdexlock";
@@ -153,14 +154,14 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(<T as Config>::WeightInfo::set_migration_operational_status())]
+        #[pallet::weight(< T as Config >::WeightInfo::set_migration_operational_status())]
         pub fn set_migration_operational_status(origin: OriginFor<T>, status: bool) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
             Operational::<T>::put(status);
             Ok(Pays::No.into())
         }
 
-        #[pallet::weight(<T as Config>::WeightInfo::set_relayer_status())]
+        #[pallet::weight(< T as Config >::WeightInfo::set_relayer_status())]
         pub fn set_relayer_status(origin: OriginFor<T>, relayer: T::AccountId, status: bool) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
             Relayers::<T>::insert(&relayer, status);
@@ -168,7 +169,7 @@ pub mod pallet {
             Ok(Pays::No.into())
         }
 
-        #[pallet::weight(<T as Config>::WeightInfo::mint())]
+        #[pallet::weight(< T as Config >::WeightInfo::mint())]
         pub fn mint(origin: OriginFor<T>, beneficiary: T::AccountId, amount: T::Balance, eth_tx: T::Hash) -> DispatchResultWithPostInfo {
             let relayer = ensure_signed(origin)?;
             ensure!(eth_tx != T::Hash::default(), Error::<T>::InvalidTxHash);
@@ -182,7 +183,7 @@ pub mod pallet {
             }
         }
 
-        #[pallet::weight(<T as Config>::WeightInfo::unlock())]
+        #[pallet::weight(< T as Config >::WeightInfo::unlock())]
         pub fn unlock(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let beneficiary = ensure_signed(origin)?;
             if Self::operational() {
@@ -192,7 +193,7 @@ pub mod pallet {
                 Err(Error::<T>::NotOperational)?
             }
         }
-        #[pallet::weight(<T as Config>::WeightInfo::remove_minted_tokens())]
+        #[pallet::weight(< T as Config >::WeightInfo::remove_minted_tokens())]
         pub fn remove_minted_tokens(origin: OriginFor<T>, beneficiary: T::AccountId) -> DispatchResultWithPostInfo {
             ensure_root(origin)?;
             Self::remove_fradulent_tokens(beneficiary)?;
@@ -229,7 +230,7 @@ pub mod pallet {
                                  beneficiary: T::AccountId,
                                  amount: T::Balance,
                                  eth_hash: T::Hash,
-                                 mut burn_details: BurnTxDetails<T> ) -> Result<(), Error<T>> {
+                                 mut burn_details: BurnTxDetails<T>) -> Result<(), Error<T>> {
             let relayer_status = Relayers::<T>::get(&relayer);
 
             if relayer_status {
@@ -241,10 +242,12 @@ pub mod pallet {
                         // Mint tokens
                         let _positive_imbalance = pallet_balances::Pallet::<T>::deposit_creating(&beneficiary, amount);
                         let reasons = WithdrawReasons::TRANSFER;
+                        // Loads the previous locked balance for migration if any, else return zero
+                        let previous_balance: T::Balance = Self::previous_locked_balance(&beneficiary);
                         // Lock tokens for 28 days
                         pallet_balances::Pallet::<T>::set_lock(MIGRATION_LOCK,
                                                                &beneficiary,
-                                                               amount,
+                                                               amount.saturating_add(previous_balance),
                                                                reasons);
                         let current_blocknumber: T::BlockNumber = frame_system::Pallet::<T>::current_block_number();
                         LockedTokenHolders::<T>::insert(beneficiary.clone(), current_blocknumber);
@@ -280,6 +283,19 @@ pub mod pallet {
             } else {
                 Err(Error::<T>::UnknownBeneficiary)
             }
+        }
+
+        pub fn previous_locked_balance(who: &T::AccountId) -> T::Balance {
+            let mut prev_locked_amount: T::Balance = T::Balance::zero();
+
+            let locks = pallet_balances::Locks::<T>::get(who);
+            // Loop is fine, since pallet_balances guarantee that it is not more than MAXLOCKS
+            for lock in locks {
+                if lock.id == MIGRATION_LOCK{
+                    prev_locked_amount = lock.amount;
+                }
+            }
+            return prev_locked_amount;
         }
     }
 }
