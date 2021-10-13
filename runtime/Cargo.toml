@@ -73,6 +73,8 @@ sp-inherents = { default-features = false, git = "https://github.com/paritytech/
 sp-staking = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master" }
 sp-npos-elections = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master" }
 frame-election-provider-support = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master" }
+pallet-assets = { default-features = false, git = "https://github.com/paritytech/substrate", branch = "master" }
+
 #end added
 
 # Used for the node template's RPCs
@@ -112,6 +114,7 @@ std = [
     'frame-support/std',
     'frame-system/std',
     'frame-system-rpc-runtime-api/std',
+    'pallet-assets/std',
     'pallet-authorship/std',
     'pallet-babe/std',
     'pallet-balances/std',
@@ -169,6 +172,7 @@ std = [
 runtime-benchmarks = [
     "frame-benchmarking",
     "frame-support/runtime-benchmarks",
+    "pallet-assets/runtime-benchmarks",
     "frame-system-benchmarking",
     "frame-system/runtime-benchmarks",
     "hex-literal",
